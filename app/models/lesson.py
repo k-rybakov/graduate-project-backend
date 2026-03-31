@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Text, Integer, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Text, Integer, DateTime, ForeignKey, UniqueConstraint, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,6 +11,7 @@ class Lesson(Base):
     __table_args__ = (UniqueConstraint("course_id", "slug", name="uq_lesson_course_slug"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    is_free: Mapped[bool] = mapped_column(Boolean, default=False)
     course_id: Mapped[int] = mapped_column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     slug: Mapped[str] = mapped_column(Text, nullable=False)
@@ -20,8 +21,12 @@ class Lesson(Base):
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
+
     sections: Mapped[list["LessonSection"]] = relationship(
-        "LessonSection", back_populates="lesson", order_by="LessonSection.order_index"
+        "LessonSection",
+        back_populates="lesson",
+        order_by="LessonSection.order_index",
+        cascade="all, delete-orphan"
     )
 
 
@@ -30,14 +35,19 @@ class LessonSection(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     lesson_id: Mapped[int] = mapped_column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"), nullable=False)
-    type: Mapped[str] = mapped_column(Text, nullable=False)  # 'theory' | 'practice'
+    type: Mapped[str] = mapped_column(Text, nullable=False)
     title: Mapped[str | None] = mapped_column(Text, nullable=True)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    content: Mapped[dict | None] = mapped_column(JSONB, nullable=True)  # TipTap JSON; theory only
+    content: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
     lesson: Mapped["Lesson"] = relationship("Lesson", back_populates="sections")
+
+
     tasks: Mapped[list["PracticeTask"]] = relationship(
-        "PracticeTask", back_populates="section", order_by="PracticeTask.order_index"
+        "PracticeTask",
+        back_populates="section",
+        order_by="PracticeTask.order_index",
+        cascade="all, delete-orphan"
     )
 
 
@@ -46,7 +56,7 @@ class PracticeTask(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     section_id: Mapped[int] = mapped_column(Integer, ForeignKey("lesson_sections.id", ondelete="CASCADE"), nullable=False)
-    task_type: Mapped[str] = mapped_column(Text, nullable=False)  # 'code_check' | 'multiple_choice' | 'reorder_lines'
+    task_type: Mapped[str] = mapped_column(Text, nullable=False)
     title: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
