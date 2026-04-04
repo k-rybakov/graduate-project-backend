@@ -105,7 +105,7 @@ def delete_lesson(lesson_id: int, admin=Depends(require_admin), db: Session = De
 @router.put("/lessons/{lesson_id}", response_model=LessonOut)
 def update_lesson(
     lesson_id: int,
-    body: LessonCreate,
+    body: LessonUpdate,
     admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
@@ -113,12 +113,16 @@ def update_lesson(
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
 
-    lesson.title = body.title
-    lesson.slug = body.slug
-    lesson.order_index = body.order_index
-    lesson.is_free = body.is_free
-
-    save_lesson_content(db, lesson, body.sections)
+    if body.title is not None:
+        lesson.title = body.title
+    if body.slug is not None:
+        lesson.slug = body.slug
+    if body.order_index is not None:
+        lesson.order_index = body.order_index
+    if body.is_free is not None:
+        lesson.is_free = body.is_free
+    if body.sections is not None:
+        save_lesson_content(db, lesson, body.sections)
 
     db.commit()
     db.refresh(lesson)
