@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, get_optional_user
 from app.schemas.course import CourseListItem, CourseDetail
 from app.schemas.lesson import LessonOut
 from app.models.lesson import Lesson, LessonSection
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/courses", tags=["courses"])
 
 
 @router.get("", response_model=list[CourseListItem])
-def list_courses(user=Depends(get_current_user), db: Session = Depends(get_db)):
+def list_courses(user=Depends(get_optional_user), db: Session = Depends(get_db)):
     return get_courses_for_user(user, db)
 
 

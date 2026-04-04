@@ -7,7 +7,9 @@ from app.models.progress import UserCourseAccess
 from app.models.user import User
 
 
-def _has_purchased_course(user: User, course_id: int, db: Session) -> bool:
+def _has_purchased_course(user: User | None, course_id: int, db: Session) -> bool:
+    if user is None:
+        return False
     if user.role == "admin":
         return True
     access = (
@@ -18,7 +20,7 @@ def _has_purchased_course(user: User, course_id: int, db: Session) -> bool:
     return access is not None
 
 
-def get_courses_for_user(user: User, db: Session) -> list[dict]:
+def get_courses_for_user(user: User | None, db: Session) -> list[dict]:
     courses = (
         db.query(Course)
         .filter(Course.deleted_at.is_(None))

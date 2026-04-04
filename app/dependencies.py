@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -33,6 +34,25 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+optional_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_bearer_scheme),
+    db: Session = Depends(get_db),
+):
+    from app.models.user import User
+
+    if not credentials:
+        return None
+    get_firebase_app()
+    try:
+        decoded = firebase_auth.verify_id_token(credentials.credentials)
+    except Exception:
+        return None
+    return db.query(User).filter(User.id == decoded["uid"]).first()
 
 
 def require_admin(user=Depends(get_current_user)):
