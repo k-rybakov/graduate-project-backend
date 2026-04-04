@@ -43,7 +43,7 @@ def create_course(body: CourseCreate, admin=Depends(require_admin), db: Session 
     db.add(course)
     db.commit()
     db.refresh(course)
-    return {**course.__dict__, "is_locked": False}
+    return {**course.__dict__, "is_locked": False, "lesson_count": 0}
 
 
 @router.put("/courses/{course_id}", response_model=CourseListItem)
@@ -57,7 +57,8 @@ def update_course(course_id: int, body: CourseUpdate, admin=Depends(require_admi
     course.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(course)
-    return {**course.__dict__, "is_locked": False}
+    lesson_count = db.query(Lesson).filter(Lesson.course_id == course.id, Lesson.deleted_at.is_(None)).count()
+    return {**course.__dict__, "is_locked": False, "lesson_count": lesson_count}
 
 
 @router.delete("/courses/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
