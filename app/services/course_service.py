@@ -7,14 +7,12 @@ from app.models.progress import UserCourseAccess
 from app.models.user import User
 
 
-def _has_course_access(user: User, course: Course, db: Session) -> bool:
+def _has_purchased_course(user: User, course_id: int, db: Session) -> bool:
     if user.role == "admin":
-        return True
-    if course.is_free:
         return True
     access = (
         db.query(UserCourseAccess)
-        .filter(UserCourseAccess.user_id == user.id, UserCourseAccess.course_id == course.id)
+        .filter(UserCourseAccess.user_id == user.id, UserCourseAccess.course_id == course_id)
         .first()
     )
     return access is not None
@@ -29,7 +27,7 @@ def get_courses_for_user(user: User, db: Session) -> list[dict]:
     )
     result = []
     for course in courses:
-        locked = not _has_course_access(user, course, db)
+        locked = not _has_purchased_course(user, course.id, db)
         result.append({**course.__dict__, "is_locked": locked})
     return result
 
@@ -45,7 +43,7 @@ def get_course_detail(slug: str, user: User, db: Session) -> dict:
         .order_by(Lesson.order_index)
         .all()
     )
-    locked = not _has_course_access(user, course, db)
+    locked = not _has_purchased_course(user, course.id, db)
     return {**course.__dict__, "is_locked": locked, "lessons": lessons}
 
 
@@ -54,9 +52,6 @@ def get_lesson(course_slug: str, lesson_slug: str, user: User, db: Session):
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
 
-    if not _has_course_access(user, course, db):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Course access required")
-
     lesson = (
         db.query(Lesson)
         .filter(Lesson.course_id == course.id, Lesson.slug == lesson_slug, Lesson.deleted_at.is_(None))
@@ -64,5 +59,8 @@ def get_lesson(course_slug: str, lesson_slug: str, user: User, db: Session):
     )
     if not lesson:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")
+
+    if not lesson.is_free and not _has_purchased_course(user, course.id, db):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Course purchase required")
 
     return lesson
