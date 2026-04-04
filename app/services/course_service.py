@@ -30,11 +30,16 @@ def get_courses_for_user(user: User | None, db: Session) -> list[dict]:
     result = []
     for course in courses:
         locked = not _has_purchased_course(user, course.id, db)
-        result.append({**course.__dict__, "is_locked": locked})
+        lesson_count = (
+            db.query(Lesson)
+            .filter(Lesson.course_id == course.id, Lesson.deleted_at.is_(None))
+            .count()
+        )
+        result.append({**course.__dict__, "is_locked": locked, "lesson_count": lesson_count})
     return result
 
 
-def get_course_detail(slug: str, user: User | None, db: Session) -> dict:
+def get_course_detail(slug: str, user: User, db: Session) -> dict:
     course = db.query(Course).filter(Course.slug == slug, Course.deleted_at.is_(None)).first()
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")

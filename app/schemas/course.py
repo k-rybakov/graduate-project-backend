@@ -20,6 +20,7 @@ class CourseListItem(BaseModel):
     thumbnail_url: str | None
     order_index: int
     is_locked: bool
+    lesson_count: int
 
 
 class CourseDetail(BaseModel):

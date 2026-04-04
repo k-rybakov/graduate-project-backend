@@ -136,8 +136,8 @@ requirements.txt
 | ------ | --------------------------------- | ----------------- | ----------------------------------------- |
 | POST   | `/auth/login`                     | Firebase token    | Verify token, upsert user, return profile |
 | GET    | `/auth/me`                        | Required          | Current user profile                      |
-| GET    | `/courses`                              | Public            | List courses (all locked if unauthenticated) |
-| GET    | `/courses/{slug}`                       | Public            | Course detail + lesson list (locked if unauthenticated) |
+| GET    | `/courses`                              | Public            | List courses with lesson count (all locked if unauthenticated) |
+| GET    | `/courses/{slug}`                       | Required          | Course detail + lesson list               |
 | GET    | `/courses/{slug}/lessons`               | Required          | Lesson list for a course                  |
 | GET    | `/courses/{slug}/lessons/{slug}`        | Required + access | Full lesson content                       |
 | POST   | `/progress/lessons/{id}/complete`       | Required          | Mark lesson complete                      |
