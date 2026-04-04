@@ -136,17 +136,22 @@ requirements.txt
 | ------ | --------------------------------- | ----------------- | ----------------------------------------- |
 | POST   | `/auth/login`                     | Firebase token    | Verify token, upsert user, return profile |
 | GET    | `/auth/me`                        | Required          | Current user profile                      |
-| GET    | `/courses`                        | Required          | List courses with access flags            |
-| GET    | `/courses/{slug}`                 | Required          | Course detail + lesson list               |
-| GET    | `/courses/{slug}/lessons/{slug}`  | Required + access | Full lesson content                       |
-| POST   | `/progress/lessons/{id}/complete` | Required          | Mark lesson complete                      |
-| GET    | `/progress/courses/{id}`          | Required          | Course completion progress                |
-| POST   | `/payments/purchase`              | Required          | Attempt course purchase                   |
-| GET    | `/admin/users`                    | Admin             | List all users                            |
-| GET    | `/admin/courses`                  | Admin             | List all courses                          |
-| POST   | `/admin/courses`                  | Admin             | Create course                             |
-| PUT    | `/admin/courses/{id}`             | Admin             | Update course                             |
-| DELETE | `/admin/courses/{id}`             | Admin             | Soft-delete course                        |
+| GET    | `/courses`                              | Public            | List courses (all locked if unauthenticated) |
+| GET    | `/courses/{slug}`                       | Required          | Course detail + lesson list               |
+| GET    | `/courses/{slug}/lessons`               | Required          | Lesson list for a course                  |
+| GET    | `/courses/{slug}/lessons/{slug}`        | Required + access | Full lesson content                       |
+| POST   | `/progress/lessons/{id}/complete`       | Required          | Mark lesson complete                      |
+| GET    | `/progress/courses/{id}`                | Required          | Course completion progress                |
+| POST   | `/payments/purchase`                    | Required          | Attempt course purchase                   |
+| GET    | `/admin/users`                          | Admin             | List all users                            |
+| GET    | `/admin/courses`                        | Admin             | List all courses                          |
+| POST   | `/admin/courses`                        | Admin             | Create course                             |
+| PUT    | `/admin/courses/{id}`                   | Admin             | Update course                             |
+| DELETE | `/admin/courses/{id}`                   | Admin             | Soft-delete course                        |
+| GET    | `/admin/courses/{id}/lessons`           | Admin             | List lessons for a course                 |
+| POST   | `/admin/lessons`                        | Admin             | Create lesson with sections and tasks     |
+| PUT    | `/admin/lessons/{id}`                   | Admin             | Update lesson                             |
+| DELETE | `/admin/lessons/{id}`                   | Admin             | Delete lesson                             |
 
 All protected endpoints require `Authorization: Bearer <firebase-id-token>`.
 
