@@ -34,7 +34,7 @@ def get_courses_for_user(user: User | None, db: Session) -> list[dict]:
     return result
 
 
-def get_course_detail(slug: str, user: User, db: Session) -> dict:
+def get_course_detail(slug: str, user: User | None, db: Session) -> dict:
     course = db.query(Course).filter(Course.slug == slug, Course.deleted_at.is_(None)).first()
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")

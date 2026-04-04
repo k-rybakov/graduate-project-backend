@@ -17,7 +17,7 @@ def list_courses(user=Depends(get_optional_user), db: Session = Depends(get_db))
 
 
 @router.get("/{slug}", response_model=CourseDetail)
-def course_detail(slug: str, user=Depends(get_current_user), db: Session = Depends(get_db)):
+def course_detail(slug: str, user=Depends(get_optional_user), db: Session = Depends(get_db)):
     return get_course_detail(slug, user, db)
 
 
