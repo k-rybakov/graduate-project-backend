@@ -22,7 +22,7 @@ def course_detail(slug: str, user=Depends(get_current_user), db: Session = Depen
 
 
 @router.get("/{slug}/lessons", response_model=list[LessonOut])
-def get_course_lessons_public(slug: str, db: Session = Depends(get_db)):
+def get_course_lessons(slug: str, user=Depends(get_current_user), db: Session = Depends(get_db)):
     course = db.query(Course).filter(Course.slug == slug, Course.deleted_at.is_(None)).first()
     
     if not course:
