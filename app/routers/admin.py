@@ -7,6 +7,7 @@ from app.models.course import Course
 from app.models.user import User
 from app.schemas.course import CourseCreate, CourseUpdate, CourseListItem
 from app.schemas.user import UserOut
+from app.services.course_service import get_courses_for_user
 
 from app.schemas.lesson import LessonCreate, LessonUpdate, LessonOut
 from app.models.lesson import Lesson
@@ -22,8 +23,7 @@ def list_users(admin=Depends(require_admin), db: Session = Depends(get_db)):
 
 @router.get("/courses", response_model=list[CourseListItem])
 def list_courses(admin=Depends(require_admin), db: Session = Depends(get_db)):
-    courses = db.query(Course).filter(Course.deleted_at.is_(None)).order_by(Course.order_index).all()
-    return [{**c.__dict__, "is_locked": False} for c in courses]
+    return get_courses_for_user(admin, db)
 
 
 @router.get("/courses/{course_id}/lessons", response_model=list[LessonOut])
