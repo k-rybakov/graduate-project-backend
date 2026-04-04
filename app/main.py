@@ -9,15 +9,14 @@ load_dotenv()
 
 app = FastAPI(title="DevQuest API")
 
-frontend_url = os.environ.get("FRONTEND_URL", "")
+_origins = ["http://localhost:5173", "https://*.vercel.app"]
+_frontend_url = os.environ.get("FRONTEND_URL")
+if _frontend_url:
+    _origins.append(_frontend_url)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        frontend_url,
-        "https://*.vercel.app",
-    ],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
