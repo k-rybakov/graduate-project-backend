@@ -28,6 +28,7 @@ class LessonOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    course_id: int
     title: str
     slug: str
     order_index: int
