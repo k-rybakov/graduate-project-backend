@@ -123,6 +123,7 @@ app/
     course_service.py
     progress_service.py
     payment_service.py
+    admin_service.py
 alembic/               # Migration files
 docker-compose.yml
 requirements.txt
