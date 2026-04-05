@@ -19,7 +19,8 @@ def save_lesson_content(db, lesson, sections_data):
         db.flush()
 
         if is_practice:
-            for t_data in s_dict.get("tasks", []):
+            tasks = (s_dict.get("content") or {}).get("tasks", [])
+            for t_data in tasks:
                 t_dict = t_data if isinstance(t_data, dict) else t_data.model_dump()
                 new_task = PracticeTask(
                     section_id=new_section.id,
