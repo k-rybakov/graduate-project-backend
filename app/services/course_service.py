@@ -14,7 +14,7 @@ def _has_purchased_course(user: User | None, course_id: int, db: Session) -> boo
         return True
     access = (
         db.query(UserCourseAccess)
-        .filter(UserCourseAccess.user_id == user.id, UserCourseAccess.course_id == course_id)
+        .filter(UserCourseAccess.user_id == user.id)
         .first()
     )
     return access is not None
