@@ -28,7 +28,6 @@ def get_course_lessons(slug: str, user=Depends(get_current_user), db: Session = 
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
 
-
     lessons = (
         db.query(Lesson)
         .options(
