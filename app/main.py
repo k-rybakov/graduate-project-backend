@@ -9,7 +9,7 @@ load_dotenv()
 
 app = FastAPI(title="DevQuest API")
 
-_origins = ["http://localhost:5173", "https://*.vercel.app"]
+_origins = ["http://localhost:5173", "https://woolf-graduate-proj.vercel.app"]
 _frontend_url = os.environ.get("FRONTEND_URL")
 if _frontend_url:
     _origins.append(_frontend_url)
